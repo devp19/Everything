@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently -k \"npm run dev:web\" \"npm run dev:electron\"",
     "dev:web": "cd ../web && npm run dev",
-    "dev:electron": "wait-on tcp:3000 && electron .",
+    "dev:electron": "wait-on http://localhost:3000 && electron .",
     "start": "electron ."
   },
   "devDependencies": {
