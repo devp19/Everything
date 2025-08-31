@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { LoginForm } from "@/components/login-form";
 import { Button } from "@/components/ui/button";
-import { LiaLongArrowAltLeftSolid } from "react-icons/lia";
+import { LiaLongArrowAltLeftSolid, LiaLongArrowAltRightSolid  } from "react-icons/lia";
 import { HyperText } from "@/components/magicui/hyper-text";
 
 import {
@@ -11,8 +11,10 @@ import {
   AnnouncementTitle,
 } from "@/components/ui/kibo-ui/announcement";
 import { ArrowUpRightIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { TextAnimate } from "@/components/magicui/text-animate";
+
 
 export default function Home() {
   const [showAnnouncement, setShowAnnouncement] = useState(false);
@@ -31,6 +33,9 @@ export default function Home() {
     }, 3000);
     return () => clearTimeout(timer);
   }, []);
+
+
+  const router = useRouter();
 
   return (
     <div className="frosty flex flex-col min-h-screen items-center justify-center relative overflow-hidden">
@@ -77,6 +82,28 @@ export default function Home() {
             The AI powered productivity suite for individuals and enterprises.
 
         </div>
+        <div className="gap-2 flex flex-row flex-wrap items-center justify-center mt-9">
+
+  <div
+          className={`transition-opacity duration-700 ${
+            showAnnouncement2 ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
+        >
+
+            <Button
+        onClick={() => router.push('/login')}
+        variant={'ghost'}
+        className="group inline-flex text-sm transition-all cursor-pointer text-muted-foreground hover:text-primary cursor-pointer"
+      >
+        <span className="inline-flex items-center justify-center transition-all group-hover:pr-2 gap-2">
+            Continue <LiaLongArrowAltRightSolid />
+          </span>
+      </Button>
+        </div>
+        
+      
+          </div>
+      
         </div>
       </main>
     </div>
