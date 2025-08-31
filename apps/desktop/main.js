@@ -22,7 +22,7 @@ function createWindow() {
     const devUrl = "http://localhost:3000";
     console.log("Loading dev URL:", devUrl);
     win.loadURL(devUrl);
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
   } else {
     const prodPath = path.join(__dirname, "../web/out/index.html");
     console.log("Loading prod file:", prodPath);
