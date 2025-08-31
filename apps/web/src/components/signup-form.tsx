@@ -85,24 +85,36 @@ export function SignUpForm({
   };
 
   // verify OTP
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const code = otp.join("");
+// verify OTP
+const handleVerifyOtp = async (e: React.FormEvent) => {
+  e.preventDefault();
+  const code = otp.join("");
 
-    const res = await fetch("/api/verify-otp", {
-      method: "POST",
-      body: JSON.stringify({ email, code }),
-      headers: { "Content-Type": "application/json" },
+  const res = await fetch("/api/verify-otp", {
+    method: "POST",
+    body: JSON.stringify({ email, code }),
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const data = await res.json();
+  if (data.success) {
+
+    const { error: loginError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     });
 
-    const data = await res.json();
-    if (data.success) {
-      setSuccess("✅ Your account has been verified!");
-      setError("");
-    } else {
-      setError(data.error || "Invalid OTP");
+    if (loginError) {
+      setError("Account verified but login failed.");
+      return;
     }
-  };
+
+    setSuccess("You are now verified! Let's start personalizing your dashboard!");
+    setError("");
+  } else {
+    setError(data.error || "Invalid OTP");
+  }
+};
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -191,7 +203,7 @@ export function SignUpForm({
                 )}
               </AnimatePresence>
 
-              {error && <p className="text-red-500 text-sm">{error}</p>}
+              {error && <p className="text-white text-sm">{error}</p>}
 
               <Button type="submit" className="w-full group transition-all">
                 {showPasswordFields ? "Sign Up" : "Continue"}
@@ -233,9 +245,9 @@ export function SignUpForm({
             ))}
           </div>
 
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          {error && <p className="text-white text-sm text-center">{error}</p>}
           {success && (
-            <p className="text-green-500 text-sm text-center">{success}</p>
+            <p className="text-white text-sm text-center">{success}</p>
           )}
 
           <Button type="submit" className="w-full group transition-all">

@@ -1,10 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import { LoginForm } from "@/components/login-form";
 import { Button } from "@/components/ui/button";
-import { LiaLongArrowAltLeftSolid, LiaLongArrowAltRightSolid  } from "react-icons/lia";
-import { HyperText } from "@/components/magicui/hyper-text";
-
+import { LiaLongArrowAltRightSolid } from "react-icons/lia";
+import { createClient } from "@supabase/supabase-js";
 import {
   Announcement,
   AnnouncementTag,
@@ -12,34 +10,51 @@ import {
 } from "@/components/ui/kibo-ui/announcement";
 import { ArrowUpRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-
 import { TextAnimate } from "@/components/magicui/text-animate";
 
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function Home() {
   const [showAnnouncement, setShowAnnouncement] = useState(false);
   const [showAnnouncement2, setShowAnnouncement2] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowAnnouncement(true);
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowAnnouncement2(true);
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, []);
-
+  const [session, setSession] = useState<any>(null);
 
   const router = useRouter();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowAnnouncement(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowAnnouncement2(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // check session on mount
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <div className="frosty flex flex-col min-h-screen items-center justify-center relative overflow-hidden">
       <main className="flex flex-col items-center justify-center w-full text-white text-center text-3xl mb-9">
+        {/* Announcement */}
         <div
           className={`transition-opacity duration-700 ${
             showAnnouncement ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -56,6 +71,8 @@ export default function Home() {
             </AnnouncementTitle>
           </Announcement>
         </div>
+
+        {/* Hero */}
         <div className="text-4xl">
           <div className="mt-6 text-4xl flex flex-row flex-wrap items-center gap-2 justify-center">
             <TextAnimate animation="blurInUp" by="word" delay={0.2}>
@@ -72,38 +89,36 @@ export default function Home() {
             Everything you need, all in one place.
           </TextAnimate>
         </div>
-        <div className="mt-6 text-sm text-muted-foreground">
-          <div
-          className={`transition-opacity duration-700 ${
+
+        {/* Subtext */}
+        <div
+          className={`mt-6 text-sm text-muted-foreground transition-opacity duration-700 ${
             showAnnouncement2 ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
         >
-
-            The AI powered productivity suite for individuals and enterprises.
-
+          The AI powered productivity suite for individuals and enterprises.
         </div>
+
+        {/* Continue button */}
         <div className="gap-2 flex flex-row flex-wrap items-center justify-center mt-9">
-
-  <div
-          className={`transition-opacity duration-700 ${
-            showAnnouncement2 ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
-        >
-
-            <Button
-        onClick={() => router.push('/login')}
-        variant={'ghost'}
-        className="group inline-flex text-sm transition-all cursor-pointer text-muted-foreground hover:text-primary cursor-pointer"
-      >
-        <span className="inline-flex items-center justify-center transition-all group-hover:pr-2 gap-2">
-            Continue <LiaLongArrowAltRightSolid />
-          </span>
-      </Button>
+          <Button
+            onClick={() => router.push("/login")}
+            variant={"ghost"}
+            className="group inline-flex text-sm transition-all cursor-pointer text-muted-foreground hover:text-primary"
+          >
+            <span className="inline-flex items-center justify-center transition-all group-hover:pr-2 gap-2">
+              Continue <LiaLongArrowAltRightSolid />
+            </span>
+          </Button>
         </div>
-        
-      
-          </div>
-      
+
+        {/* Session info under button */}
+        <div className="mt-4 text-sm text-muted-foreground">
+          {session ? (
+            <p>Logged in as {session.user.email}</p>
+          ) : (
+            <p>Not logged in</p>
+          )}
         </div>
       </main>
     </div>
