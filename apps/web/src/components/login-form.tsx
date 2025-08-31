@@ -1,18 +1,32 @@
-import { GalleryVerticalEnd } from "lucide-react"
+"use client";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { GalleryVerticalEnd } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { LiaLongArrowAltRightSolid } from "react-icons/lia";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleContinue = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!showPassword) {
+      setShowPassword(true);
+    } else {
+      // submit logic here when email & password are both filled
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form>
+      <form onSubmit={handleContinue}>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">
             <a
@@ -25,9 +39,10 @@ export function LoginForm({
               <span className="sr-only">Acme Inc.</span>
             </a>
             <h1 className="text-xl font-regular">Welcome back!</h1>
-            
           </div>
+
           <div className="flex flex-col gap-6 max-w-md mx-auto w-full">
+            {/* Email */}
             <div className="grid gap-3">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -37,10 +52,33 @@ export function LoginForm({
                 required
               />
             </div>
+
+            {/* Animate password input */}
+            <AnimatePresence>
+              {showPassword && (
+                <motion.div
+                  className="grid gap-3"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Your password"
+                    required
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <Button type="submit" className="w-full group transition-all">
-              Continue <span className="transition-all group-hover:ml-2">
-    <LiaLongArrowAltRightSolid />
-  </span>
+              {showPassword ? "Login" : "Continue"}
+              <span className="transition-all group-hover:ml-2">
+                <LiaLongArrowAltRightSolid />
+              </span>
             </Button>
           </div>
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t max-w-md mx-auto w-full">
