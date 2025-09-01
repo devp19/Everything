@@ -3,7 +3,25 @@ import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { LogOut, Home, Settings, Grid, BarChart2, User } from "lucide-react";
+import {
+  LogOut,
+  Home,
+  Settings,
+  Grid,
+  BarChart2,
+  User,
+  Search,
+  Sun,
+  Clock,
+  FileText,
+  DollarSign,
+  TrendingUp,
+  Receipt,
+  CreditCard,
+  Plus,
+  MessageCircle,
+  ArrowUp,
+} from "lucide-react";
 
 // Supabase config
 const supabase = createClient(
@@ -35,140 +53,301 @@ export default function HomePage() {
   return (
     <div className="min-h-screen w-full flex frosty text-white">
       {/* Sidebar */}
-      <aside className="w-16 flex flex-col justify-between items-center py-6 border-r border-white/10 bg-neutral-950 opacity-20">
+      <aside className="w-16 flex flex-col justify-between items-center py-6 bg-neutral-900/50 border-r border-white/10">
         <div className="flex flex-col gap-6">
-          <button className="p-2 hover:text-primary">
-            <Home size={20} />
-          </button>
-          <button className="p-2 hover:text-primary">
+          {/* Logo */}
+          <div className="p-2">
+            <Sun size={24} className="text-white" />
+          </div>
+
+          <button className="p-2 hover:text-cyan-400 transition-colors">
             <Grid size={20} />
           </button>
-          <button className="p-2 hover:text-primary">
-            <BarChart2 size={20} />
+          <button className="p-2 hover:text-cyan-400 transition-colors">
+            <Home size={20} />
           </button>
-          <button className="p-2 hover:text-primary">
+          <button className="p-2 hover:text-cyan-400 transition-colors">
+            <FileText size={20} />
+          </button>
+          <button className="p-2 hover:text-cyan-400 transition-colors">
+            <Receipt size={20} />
+          </button>
+          <button className="p-2 hover:text-cyan-400 transition-colors">
+            <Clock size={20} />
+          </button>
+          <button className="p-2 hover:text-cyan-400 transition-colors">
+            <FileText size={20} />
+          </button>
+          <button className="p-2 hover:text-cyan-400 transition-colors">
+            <User size={20} />
+          </button>
+          <button className="p-2 hover:text-cyan-400 transition-colors">
             <Settings size={20} />
           </button>
         </div>
-        <div className="flex flex-col gap-4 items-center">
-          <button className="p-2 hover:text-primary">
-            <User size={20} />
-          </button>
-          {session && (
-            <Button
-              onClick={handleLogout}
-              size="icon"
-              variant="ghost"
-              className="text-muted-foreground hover:text-red-500"
-            >
-              <LogOut size={18} />
-            </Button>
-          )}
-        </div>
       </aside>
 
-      {/* Main dashboard */}
-      <main className="flex-1 px-12 py-10 overflow-y-auto">
-        {/* Top bar: Greeting + right controls */}
-        <div className="flex justify-between items-center mb-10">
-          <div>
-            <span className="text-3xl font-light">Morning</span>
-            <span className="text-3xl font-semibold ml-2">
-              {session ? session.user.user_metadata?.full_name : "Viktor"}
-            </span>
-            <div className="text-neutral-400 mt-2 text-sm">
-              here's a quick look at how things are going.
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" className="border-white/20 text-white/70 px-4 py-2 hover:bg-white/10">
-              Customize
-            </Button>
-            <button className="p-2 rounded-md hover:bg-white/10">
-              <svg width={20} height={20} fill="none" stroke="currentColor">
-                <rect x="3" y="6" width="14" height="2" rx="1"/>
-                <rect x="3" y="12" width="14" height="2" rx="1"/>
-              </svg>
-            </button>
-            <div className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center">
-              <User size={20} />
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col">
+        {/* Top Search Bar */}
+        <div className="px-8 py-4 border-b border-white/10">
+          <div className="flex items-center gap-4">
+            <Search size={16} className="text-neutral-400" />
+            <input
+              type="text"
+              placeholder="Find anything"
+              className="bg-transparent text-neutral-400 placeholder-neutral-500 border-none outline-none flex-1 text-sm"
+            />
+            <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
+              <User size={16} />
             </div>
           </div>
         </div>
 
-        {/* Dashboard cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-          {/* Revenue Insights */}
-          <div className="border rounded-xl p-5 shadow relative">
-            <div className="text-sm font-semibold mb-1">Revenue Insights</div>
-            <div className="text-base">
-              <span className="text-green-500 font-bold">Revenue is up 12%</span> compared to last month.
+        {/* Dashboard Content */}
+        <div className="flex-1 px-8 py-8">
+          {/* Header */}
+          <div className="flex justify-between items-start mb-8">
+            <div>
+              <h1 className="text-4xl font-light">
+                Morning{" "}
+                <span className="font-regular text-muted-foreground">
+                  {session.user.user_metadata?.full_name
+                    ? session.user.user_metadata.full_name.split(" ")[0]
+                    : ""}
+                  ,
+                </span>
+              </h1>
+              <p className="text-neutral-400 mt-2 text-sm">
+                here's a quick look at how things are going.
+              </p>
             </div>
-            <div className="absolute bottom-4 left-4 text-xs text-neutral-400">Want to see a breakdown?</div>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                className="border-white/20 text-white/70 bg-transparent hover:bg-white/10"
+              >
+                Customize
+              </Button>
+              <button className="p-2 rounded hover:bg-white/10">
+                <div className="w-5 h-5 flex flex-col gap-1">
+                  <div className="w-full h-0.5 bg-white/60 rounded"></div>
+                  <div className="w-full h-0.5 bg-white/60 rounded"></div>
+                </div>
+              </button>
+            </div>
           </div>
-          {/* Profit Analysis */}
-          <div className="border rounded-xl p-5 shadow">
-            <div className="text-sm font-semibold mb-1">Profit Analysis</div>
-            <div className="flex items-end space-x-2 h-12 mb-2 mt-2">
-              <div className="w-1.5 h-6 bg-white/40 rounded" />
-              <div className="w-1.5 h-8 bg-white/80 rounded" />
-              <div className="w-1.5 h-10 bg-white rounded" />
-              <div className="w-1.5 h-7 bg-white/75 rounded" />
-              <div className="w-1.5 h-9 bg-white/50 rounded" />
-              <div className="w-1.5 h-8 bg-white/60 rounded" />
+
+          {/* Dashboard Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {/* Revenue Insights */}
+            <div className="bg-neutral-900/30 border border-white/10  p-6 relative">
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp size={14} className="text-neutral-400" />
+                <span className="text-xs text-neutral-400 font-medium">
+                  Revenue Insights
+                </span>
+                <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded-full ml-auto">
+                  New
+                </span>
+              </div>
+              <div className="text-sm mb-4">
+                You're on track this month!{" "}
+                <span className="font-semibold">Revenue is up 12%</span>{" "}
+                compared to last month.
+              </div>
+              <div className="absolute bottom-4 left-6">
+                <button className="text-xs text-neutral-500 hover:text-cyan-400">
+                  Want to see a breakdown?
+                </button>
+              </div>
             </div>
-            <div className="text-base">
-              Avg profit over 6 months: <span className="font-bold">$1,450.50</span>
+
+            {/* Profit Analysis */}
+            <div className="bg-neutral-900/30 border border-white/10  p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <BarChart2 size={14} className="text-neutral-400" />
+                <span className="text-sm font-semibold">Profit Analysis</span>
+              </div>
+              <div className="text-sm text-neutral-300 mb-3">
+                Your average profit during 6 months is
+              </div>
+              <div className="text-2xl font-bold mb-4">$1,450.50</div>
+              <div className="flex items-end gap-1 h-12">
+                <div className="w-2 h-6 bg-white/40 rounded-sm"></div>
+                <div className="w-2 h-8 bg-white/60 rounded-sm"></div>
+                <div className="w-2 h-10 bg-white/80 rounded-sm"></div>
+                <div className="w-2 h-7 bg-white/50 rounded-sm"></div>
+                <div className="w-2 h-9 bg-white/70 rounded-sm"></div>
+                <div className="w-2 h-8 bg-white rounded-sm"></div>
+              </div>
+            </div>
+
+            {/* Cash Runway */}
+            <div className="bg-neutral-900/30 border border-white/10  p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Clock size={14} className="text-neutral-400" />
+                <span className="text-sm font-semibold">Cash Runway</span>
+              </div>
+              <div className="text-sm text-neutral-300 mb-2">
+                Your current runway is
+              </div>
+              <div className="text-3xl font-bold mb-4">9 months</div>
+              <button className="text-xs text-neutral-500 hover:text-cyan-400">
+                See burnrate
+              </button>
+            </div>
+
+            {/* File Management */}
+            <div className="bg-neutral-900/30 border border-white/10  p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <FileText size={14} className="text-neutral-400" />
+                <span className="text-sm font-semibold">File Management</span>
+              </div>
+              <div className="text-sm mb-4">
+                <span className="text-cyan-400 font-semibold">
+                  2 new uploaded files
+                </span>
+                , automatically categorized as{" "}
+                <span className="font-semibold">agreements</span>
+              </div>
+              <button className="text-xs text-neutral-500 hover:text-cyan-400">
+                Show documents
+              </button>
+            </div>
+
+            {/* Monthly Spending */}
+            <div className="bg-neutral-900/30 border border-white/10  p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <DollarSign size={14} className="text-neutral-400" />
+                <span className="text-sm font-semibold">Monthly Spending</span>
+              </div>
+              <div className="text-sm text-neutral-300 mb-2">
+                Spending this month
+              </div>
+              <div className="text-3xl font-bold mb-4">$5,278.50</div>
+              <button className="text-xs text-neutral-500 hover:text-cyan-400">
+                See biggest cost
+              </button>
+            </div>
+
+            {/* Outstanding Invoices */}
+            <div className="bg-neutral-900/30 border border-white/10  p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Receipt size={14} className="text-neutral-400" />
+                <span className="text-sm font-semibold">
+                  Outstanding Invoices
+                </span>
+              </div>
+              <div className="text-sm mb-4">
+                You currently have{" "}
+                <span className="font-semibold">4 unpaid</span> and{" "}
+                <span className="font-semibold">$12,500</span> outstanding in
+                outstanding invoices
+              </div>
+              <button className="text-xs text-neutral-500 hover:text-cyan-400">
+                See unpaid invoices
+              </button>
+            </div>
+
+            {/* Account Balance */}
+            <div className="bg-neutral-900/30 border border-white/10  p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <CreditCard size={14} className="text-neutral-400" />
+                <span className="text-sm font-semibold">Account Balance</span>
+              </div>
+              <div className="text-sm text-neutral-300 mb-2">
+                Total account balance is{" "}
+                <span className="font-semibold">$24,356</span> in two different
+                currencies
+              </div>
+              <button className="text-xs text-neutral-500 hover:text-cyan-400 mt-4">
+                See account balances
+              </button>
+            </div>
+
+            {/* Software Costs */}
+            <div className="bg-neutral-900/30 border border-white/10  p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Settings size={14} className="text-neutral-400" />
+                <span className="text-sm font-semibold">Software Costs</span>
+              </div>
+              <div className="text-sm mb-4">
+                Your{" "}
+                <span className="text-orange-400 font-semibold">
+                  software costs increased by 10%
+                </span>{" "}
+                this month
+              </div>
+              <div className="mb-3">
+                <svg
+                  width="100%"
+                  height="24"
+                  viewBox="0 0 120 24"
+                  className="text-white"
+                >
+                  <path
+                    d="M0 18 Q20 12 40 15 Q60 8 80 12 Q100 6 120 10"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    fill="none"
+                  />
+                </svg>
+              </div>
+              <button className="text-xs text-neutral-500 hover:text-cyan-400">
+                See which subscriptions went up?
+              </button>
             </div>
           </div>
-          {/* Cash Runway */}
-          <div className="border  rounded-xl p-5 shadow">
-            <div className="text-sm font-semibold mb-1">Cash Runway</div>
-            <div className="text-3xl font-bold mt-2 mb-2 text-white">9 months</div>
-            <div className="text-xs text-neutral-400">See burnrate</div>
+
+          {/* Bottom Action Bar */}
+          <div className="flex items-center gap-6 py-4">
+            <button className="flex items-center gap-2 text-sm text-neutral-300 hover:text-white">
+              <BarChart2 size={16} />
+              Revenue
+            </button>
+            <button className="flex items-center gap-2 text-sm text-neutral-300 hover:text-white">
+              <FileText size={16} />
+              Duplicate invoice
+            </button>
+            <button className="flex items-center gap-2 text-sm text-neutral-300 hover:text-white">
+              <DollarSign size={16} />
+              Expenses
+            </button>
+            <button className="flex items-center gap-2 text-sm text-neutral-300 hover:text-white">
+              <Clock size={16} />
+              Time track
+            </button>
+            <button className="flex items-center gap-2 text-sm text-neutral-300 hover:text-white">
+              <Plus size={16} />
+              New task
+            </button>
+            <button className="flex items-center gap-2 text-sm text-neutral-300 hover:text-white">
+              <FileText size={16} />
+              Health report
+            </button>
           </div>
-          {/* File Management */}
-          <div className="border  rounded-xl p-5 shadow col-span-1">
-            <div className="text-sm font-semibold mb-1">File Management</div>
-            <div className="text-base">
-              <span className="text-cyan-400 font-bold">2 new uploaded files</span>, automatically categorized as agreements
+        </div>
+
+        {/* Bottom Chat Bar */}
+        <div className="px-8 py-4 border-t border-white/10">
+          <div className="flex items-center gap-4">
+            <div className="flex-1 flex items-center gap-3 bg-neutral-900/50  px-4 py-3">
+              <input
+                type="text"
+                placeholder="Ask anything"
+                className="bg-transparent text-white placeholder-neutral-500 border-none outline-none flex-1"
+              />
+              <button className="text-neutral-400 hover:text-white">
+                <Plus size={16} />
+              </button>
+              <button className="text-neutral-400 hover:text-white">
+                <MessageCircle size={16} />
+              </button>
             </div>
-            <div className="text-xs text-neutral-400 mt-3">Show documents</div>
-          </div>
-          {/* Monthly Spending */}
-          <div className="border  rounded-xl p-5 shadow">
-            <div className="text-sm font-semibold mb-1">Monthly Spending</div>
-            <div className="text-3xl font-semibold mt-2 mb-2">$5,278.50</div>
-            <div className="text-xs text-neutral-400">See biggest cost</div>
-          </div>
-          {/* Outstanding Invoices */}
-          <div className="border rounded-xl p-5 shadow">
-            <div className="text-sm font-semibold mb-1">Outstanding Invoices</div>
-            <div className="text-base">
-              4 unpaid, total <span className="font-bold">$12,500</span>
-            </div>
-            <div className="text-xs text-neutral-400 mt-3">See unpaid invoices</div>
-          </div>
-          {/* Account Balance */}
-          <div className="border  rounded-xl p-5 shadow col-span-1">
-            <div className="text-sm font-semibold mb-1">Account Balance</div>
-            <div className="text-base mb-2">
-              $24,356 across currencies
-            </div>
-            <div className="text-xs text-neutral-400">See account balances</div>
-          </div>
-          {/* Software Costs */}
-          <div className="border rounded-xl p-5 shadow">
-            <div className="text-sm font-semibold mb-1">Software Costs</div>
-            <div className="text-base">
-              Your <span className="text-orange-400 font-bold">software costs increased by 10%</span> this month
-            </div>
-            <div className="mt-4 w-full h-6">
-              <svg width="100%" height="100%" viewBox="0 0 120 16" fill="none">
-                <path d="M0 8 Q30 5 60 10 Q90 15 120 8" stroke="#fff" strokeWidth="2" fill="none" />
-              </svg>
-            </div>
-            <div className="text-xs text-neutral-400 mt-0">See which subscriptions went up?</div>
+            <button className="w-10 h-10 bg-white text-black  flex items-center justify-center hover:bg-neutral-200">
+              <ArrowUp size={16} />
+            </button>
           </div>
         </div>
       </main>
