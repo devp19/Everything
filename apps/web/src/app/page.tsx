@@ -120,13 +120,29 @@ export default function Home() {
         </div>
 
         {/* Session info under button */}
-        <div className="mt-4 text-sm text-muted-foreground">
-          {session ? (
-            <p>Logged in as {session.user.email}</p>
-          ) : (
-            <p>Not logged in</p>
-          )}
-        </div>
+<div className="mt-4 text-sm text-muted-foreground text-center">
+  {session ? (
+    <div className="flex flex-col gap-2 items-center">
+      <p>Logged in as {session.user.email}</p>
+      {/* temp log out button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={async () => {
+          await supabase.auth.signOut();
+          setSession(null);
+        }}
+      >
+        Log out
+      </Button>
+    </div>
+  ) : (
+    <p>Not logged in</p>
+  )}
+</div>
+
+
+        
       </motion.main>
     </div>
   );
