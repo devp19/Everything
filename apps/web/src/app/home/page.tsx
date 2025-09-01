@@ -45,6 +45,44 @@ export default function HomePage() {
     };
   }, []);
 
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      if (data.session) {
+        fetchProfile(data.session.user.id);
+      }
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        if (session) {
+          fetchProfile(session.user.id);
+        } else {
+          setProfile(null);
+        }
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const fetchProfile = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", userId)
+      .single();
+
+    if (!error) {
+      setProfile(data);
+    }
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/login");
@@ -60,29 +98,33 @@ export default function HomePage() {
             <Sun size={24} className="text-white" />
           </div>
 
-          <button className="p-2 hover:text-cyan-400 transition-colors">
+          <button className="p-2 hover:cursor-pointer">
             <Grid size={20} />
           </button>
-          <button className="p-2 hover:text-cyan-400 transition-colors">
+          <button className="p-2 hover:cursor-pointer">
             <Home size={20} />
           </button>
-          <button className="p-2 hover:text-cyan-400 transition-colors">
+          <button className="p-2 hover:cursor-pointer">
             <FileText size={20} />
           </button>
-          <button className="p-2 hover:text-cyan-400 transition-colors">
+          <button className="p-2 hover:cursor-pointer">
             <Receipt size={20} />
           </button>
-          <button className="p-2 hover:text-cyan-400 transition-colors">
+          <button className="p-2 hover:cursor-pointer">
             <Clock size={20} />
           </button>
-          <button className="p-2 hover:text-cyan-400 transition-colors">
+          <button className="p-2 hover:cursor-pointer">
             <FileText size={20} />
           </button>
-          <button className="p-2 hover:text-cyan-400 transition-colors">
+          <button className="p-2 hover:cursor-pointer">
             <User size={20} />
           </button>
-          <button className="p-2 hover:text-cyan-400 transition-colors">
+          <button className="p-2 hover:cursor-pointer">
             <Settings size={20} />
+          </button>
+          <button className="p-2 hover:cursor-pointer" onClick={handleLogout}
+>
+            <LogOut size={20} />
           </button>
         </div>
       </aside>
@@ -112,7 +154,7 @@ export default function HomePage() {
               <h1 className="text-4xl font-light">
                 Morning{" "}
                 <span className="font-regular text-muted-foreground">
-                  {session.user.user_metadata?.full_name
+                  {session?.user?.user_metadata?.full_name
                     ? session.user.user_metadata.full_name.split(" ")[0]
                     : ""}
                   ,
