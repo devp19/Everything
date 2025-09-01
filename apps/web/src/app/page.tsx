@@ -54,7 +54,6 @@ export default function Home() {
 
   return (
     <div className="frosty flex flex-col min-h-screen items-center justify-center relative overflow-hidden">
-      {/* ✅ Fade-in wrapper for whole page */}
       <motion.main
         className="flex flex-col items-center justify-center w-full text-white text-center text-3xl mb-9"
         initial={{ opacity: 0 }}
