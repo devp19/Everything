@@ -33,7 +33,8 @@ import {
   GripVertical,
 } from "lucide-react";
 
-// ============ Types ============
+/* ================= Types ================= */
+
 interface Position {
   x: number;
   y: number;
@@ -46,6 +47,8 @@ interface DashboardCardData {
   y: number;
   width: number;
   height: number;
+  minWidth?: number;   // per-widget minimums
+  minHeight?: number;  // per-widget minimums
 }
 
 interface DashboardCardProps {
@@ -71,13 +74,14 @@ interface Profile {
   full_name: string;
 }
 
-// ============ Supabase ============
+/* ============ Supabase ============ */
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-// ============ Card Content ============
+/* ============ Card Content ============ */
+
 const RevenueInsightsCard = () => (
   <>
     <div className="flex items-center gap-2 mb-2">
@@ -102,9 +106,7 @@ const ProfitAnalysisCard = () => (
       <BarChart2 size={14} className="text-neutral-400" />
       <span className="text-sm font-regular">Profit Analysis</span>
     </div>
-    <div className="text-sm text-neutral-300 mb-3">
-      Your average profit during 6 months is
-    </div>
+    <div className="text-sm text-neutral-300 mb-3">Your average profit during 6 months is</div>
     <div className={`${GeistMono.className} text-2xl font-regular mb-4 tracking-tighter`}>$1,450.50</div>
   </>
 );
@@ -117,9 +119,7 @@ const CashRunwayCard = () => (
     </div>
     <div className="text-sm text-neutral-300 mb-2">Your current runway is</div>
     <div className={`${GeistMono.className} text-2xl font-regular mb-4 tracking-tighter`}>9 months</div>
-    <button className="text-xs text-neutral-500 hover:text-white no-drag">
-      See burnrate
-    </button>
+    <button className="text-xs text-neutral-500 hover:text-white no-drag">See burnrate</button>
   </>
 );
 
@@ -133,9 +133,7 @@ const FileManagementCard = () => (
       <span className="text-white font-regular">2 new uploaded files</span>, automatically categorized as{" "}
       <span className="font-regular">agreements</span>
     </div>
-    <button className="text-xs text-neutral-500 hover:text-white no-drag">
-      Show documents
-    </button>
+    <button className="text-xs text-neutral-500 hover:text-white no-drag">Show documents</button>
   </>
 );
 
@@ -147,9 +145,7 @@ const MonthlySpendingCard = () => (
     </div>
     <div className="text-sm text-neutral-300 mb-2">Spending this month</div>
     <div className={`${GeistMono.className} text-2xl font-regular mb-4 tracking-tighter`}>$5,278.50</div>
-    <button className="text-xs text-neutral-500 hover:text-white no-drag">
-      See biggest cost
-    </button>
+    <button className="text-xs text-neutral-500 hover:text-white no-drag">See biggest cost</button>
   </>
 );
 
@@ -164,9 +160,7 @@ const OutstandingInvoicesCard = () => (
       <span className={`${GeistMono.className} font-regular mb-4 tracking-tighter`}>$12,500</span> outstanding in
       outstanding invoices
     </div>
-    <button className="text-xs text-neutral-500 hover:text-white no-drag">
-      See unpaid invoices
-    </button>
+    <button className="text-xs text-neutral-500 hover:text-white no-drag">See unpaid invoices</button>
   </>
 );
 
@@ -177,12 +171,10 @@ const AccountBalanceCard = () => (
       <span className="text-sm font-regular">Account Balance</span>
     </div>
     <div className="text-sm text-neutral-300 mb-2">
-      Total account balance is{" "}
-      <span className={`${GeistMono.className} mb-4 tracking-tighter`}>$24,356</span> in two different currencies
+      Total account balance is <span className={`${GeistMono.className} mb-4 tracking-tighter`}>$24,356</span> in two
+      different currencies
     </div>
-    <button className="text-xs text-neutral-500 hover:text-white mt-4 no-drag">
-      See account balances
-    </button>
+    <button className="text-xs text-neutral-500 hover:text-white mt-4 no-drag">See account balances</button>
   </>
 );
 
@@ -193,34 +185,26 @@ const SoftwareCostsCard = () => (
       <span className="text-sm font-regular">Software Costs</span>
     </div>
     <div className="text-sm mb-4">
-      Your{" "}
-      <span className={`${GeistMono.className} font-regular mb-4 tracking-tighter`}>
-        software costs increased by 10%
-      </span>{" "}
+      Your <span className={`${GeistMono.className} font-regular mb-4 tracking-tighter`}>software costs increased by 10%</span>{" "}
       this month
     </div>
     <div className="mb-3">
       <svg width="100%" height="24" viewBox="0 0 120 24" className="text-white">
-        <path
-          d="M0 18 Q20 12 40 15 Q60 8 80 12 Q100 6 120 10"
-          stroke="currentColor"
-          strokeWidth="2"
-          fill="none"
-        />
+        <path d="M0 18 Q20 12 40 15 Q60 8 80 12 Q100 6 120 10" stroke="currentColor" strokeWidth="2" fill="none" />
       </svg>
     </div>
-    <button className="text-xs text-neutral-500 hover:text-white no-drag">
-      See which subscriptions went up?
-    </button>
+    <button className="text-xs text-neutral-500 hover:text-white no-drag">See which subscriptions went up?</button>
   </>
 );
 
-// ============ Draggable Card ============
-const CARD_WIDTH = 320;
-const CARD_MINH = 160;
-const MIN_WIDTH = 240;
-const MIN_HEIGHT = 140;
+/* ============ Drag / Resize constants ============ */
+const DEFAULT_WIDTH = 320;
+const DEFAULT_HEIGHT = 160;
+const GLOBAL_MIN_WIDTH = 240;  // fallback minimums (used if a card doesn't specify)
+const GLOBAL_MIN_HEIGHT = 140;
 const SNAP = 24;
+
+/* ============ Draggable + Resizable Card ============ */
 
 const DashboardCard: React.FC<DashboardCardProps> = ({
   card,
@@ -234,23 +218,24 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<Position>({ x: card.x || 0, y: card.y || 0 });
   const [dragOffset, setDragOffset] = useState<Position>({ x: 0, y: 0 });
-
-  // size state for resizing
   const [size, setSize] = useState<{ width: number; height: number }>({
-    width: card.width || CARD_WIDTH,
-    height: card.height || CARD_MINH,
+    width: card.width || DEFAULT_WIDTH,
+    height: card.height || DEFAULT_HEIGHT,
   });
 
-  // keep local state in sync if parent resets layout
+  // per-card minimums (fallback to global defaults)
+  const minW = card.minWidth ?? GLOBAL_MIN_WIDTH;
+  const minH = card.minHeight ?? GLOBAL_MIN_HEIGHT;
+
   useEffect(() => {
     setPosition({ x: card.x || 0, y: card.y || 0 });
   }, [card.x, card.y]);
 
   useEffect(() => {
-    setSize({ width: card.width || CARD_WIDTH, height: card.height || CARD_MINH });
+    setSize({ width: card.width || DEFAULT_WIDTH, height: card.height || DEFAULT_HEIGHT });
   }, [card.width, card.height]);
 
-  // ---------- Dragging ----------
+  /* ---- Dragging ---- */
   const beginDrag = (clientX: number, clientY: number) => {
     const rect = cardRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -273,7 +258,6 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
     if (!isDragging || !cardRef.current) return;
     const container = cardRef.current.parentElement as HTMLElement | null;
     if (!container) return;
-
     const containerRect = container.getBoundingClientRect();
 
     let newX = clientX - containerRect.left - dragOffset.x;
@@ -284,7 +268,6 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
       newY = Math.round(newY / SNAP) * SNAP;
     }
 
-    // bound using current size
     newX = Math.max(0, Math.min(newX, containerRect.width - size.width));
     newY = Math.max(0, Math.min(newY, containerRect.height - size.height));
 
@@ -318,7 +301,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDragging, dragOffset, snapToGrid, size.width, size.height]);
 
-  // ---------- Resizing ----------
+  /* ---- Resizing ---- */
   const resizingRef = useRef(false);
   const startWH = useRef<{ w: number; h: number; x: number; y: number }>({ w: 0, h: 0, x: 0, y: 0 });
 
@@ -352,9 +335,9 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
     let newW = startWH.current.w + (clientX - startWH.current.x);
     let newH = startWH.current.h + (clientY - startWH.current.y);
 
-    // clamp to minimums
-    newW = Math.max(MIN_WIDTH, newW);
-    newH = Math.max(MIN_HEIGHT, newH);
+    // clamp to per-card minimums
+    newW = Math.max(minW, newW);
+    newH = Math.max(minH, newH);
 
     setSize({ width: newW, height: newH });
     onResize(card.id, { width: newW, height: newH });
@@ -368,7 +351,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
     document.removeEventListener("touchend", stopResize);
   };
 
-  // ---------- Styles ----------
+  /* ---- Styles ---- */
   const cardStyle: React.CSSProperties = {
     position: "absolute",
     left: position.x,
@@ -378,8 +361,8 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
     transition: isDragging ? "none" : "transform 120ms ease",
     width: size.width,
     height: size.height,
-    minWidth: MIN_WIDTH,
-    minHeight: MIN_HEIGHT,
+    minWidth: minW,
+    minHeight: minH,
   };
 
   return (
@@ -411,31 +394,36 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   );
 };
 
+/* ============ Main Page ============ */
 
-// ============ Main Page ============
 export default function HomePage() {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [snapToGrid, setSnapToGrid] = useState<boolean>(true);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [canvasHeight, setCanvasHeight] = useState<number>(600);
+  const canvasRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // Seed positions (4 columns, 24px gap)
-  const initialCards: DashboardCardData[] = [
-  { id: "revenue",  content: <RevenueInsightsCard />,   x: 0,    y: 0,   width: CARD_WIDTH, height: CARD_MINH },
-  { id: "profit",   content: <ProfitAnalysisCard />,    x: 344,  y: 0,   width: CARD_WIDTH, height: CARD_MINH },
-  { id: "runway",   content: <CashRunwayCard />,        x: 688,  y: 0,   width: CARD_WIDTH, height: CARD_MINH },
-  { id: "files",    content: <FileManagementCard />,    x: 1032, y: 0,   width: CARD_WIDTH, height: CARD_MINH },
-  { id: "spending", content: <MonthlySpendingCard />,   x: 0,    y: 200, width: CARD_WIDTH, height: CARD_MINH },
-  { id: "invoices", content: <OutstandingInvoicesCard />,x: 344, y: 200, width: CARD_WIDTH, height: CARD_MINH },
-  { id: "balance",  content: <AccountBalanceCard />,    x: 688,  y: 200, width: CARD_WIDTH, height: CARD_MINH },
-  { id: "software", content: <SoftwareCostsCard />,     x: 1032, y: 200, width: CARD_WIDTH, height: CARD_MINH },
+  // Seed positions (4 columns, 24px gap), with per-card min sizes where desired
+ const initialCards: DashboardCardData[] = [
+  // Row 1 (y = 0)
+  { id: "revenue",  content: <RevenueInsightsCard />,   x: 0,   y: 0,   width: 264, height: 192, minWidth: 264, minHeight: 192 },
+  { id: "profit",   content: <ProfitAnalysisCard />,    x: 288, y: 0,   width: 264, height: 192, minWidth: 264, minHeight: 192 },
+  { id: "runway",   content: <CashRunwayCard />,        x: 576, y: 0,   width: 264, height: 192, minWidth: 264, minHeight: 192 },
+  { id: "software", content: <SoftwareCostsCard />,     x: 864, y: 0,   width: 264, height: 192, minWidth: 364, minHeight: 192 },
+
+  // Row 2 (y = 216  ->  192 height + 24 gap)
+  { id: "spending", content: <MonthlySpendingCard />,   x: 0,   y: 216, width: 264, height: 192, minWidth: 264, minHeight: 192 },
+  { id: "invoices", content: <OutstandingInvoicesCard />,x: 288, y: 216, width: 264, height: 192, minWidth: 264, minHeight: 192 },
+  { id: "files",    content: <FileManagementCard />,    x: 576, y: 216, width: 264, height: 192, minWidth: 264, minHeight: 192 },
+  { id: "balance",  content: <AccountBalanceCard />,    x: 864, y: 216, width: 264, height: 192, minWidth: 364, minHeight: 192 },
 ];
 
 
   const [cards, setCards] = useState<DashboardCardData[]>(initialCards);
 
-  // Supabase session + profile
+  /* ---- Supabase session + profile ---- */
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
@@ -453,40 +441,71 @@ export default function HomePage() {
   }, []);
 
   const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("full_name")
-      .eq("id", userId)
-      .single();
+    const { data, error } = await supabase.from("profiles").select("full_name").eq("id", userId).single();
     if (!error && data) setProfile(data);
   };
 
-  // Layout persistence
+  /* ---- Layout persistence (load) ---- */
   useEffect(() => {
     const raw = typeof window !== "undefined" ? localStorage.getItem("dashboard_layout") : null;
     if (raw) {
-      const saved = JSON.parse(raw) as { id: string; x: number; y: number }[];
+      const saved = JSON.parse(raw) as { id: string; x: number; y: number; width?: number; height?: number }[];
       setCards((prev) =>
         prev.map((c) => {
           const hit = saved.find((s) => s.id === c.id);
-          return hit ? { ...c, x: hit.x, y: hit.y } : c;
+          return hit
+            ? {
+                ...c,
+                x: hit.x,
+                y: hit.y,
+                width: hit.width ?? c.width,
+                height: hit.height ?? c.height,
+              }
+            : c;
         })
       );
     }
   }, []);
 
-  const saveLayout = () => {
-  const layout = cards.map(({ id, x, y, width, height }) => ({ id, x, y, width, height }));
-  localStorage.setItem("dashboard_layout", JSON.stringify(layout));
-};
+  /* ---- Dynamic canvas height (no horizontal scroll) ---- */
+  useEffect(() => {
+    const maxBottom = cards.reduce((m, c) => Math.max(m, c.y + c.height), 0);
+    const padded = Math.ceil((maxBottom + 24) / SNAP) * SNAP;
+    setCanvasHeight(Math.max(400, padded));
+  }, [cards]);
 
+  /* ---- Clamp card positions on window resize ---- */
+  useEffect(() => {
+    const onResize = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+
+      setCards((prev) =>
+        prev.map((c) => ({
+          ...c,
+          x: Math.min(c.x, Math.max(0, w - c.width)),
+          y: Math.min(c.y, Math.max(0, h - c.height)),
+        }))
+      );
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  /* ---- Save / Reset ---- */
+  const saveLayout = () => {
+    const layout = cards.map(({ id, x, y, width, height }) => ({ id, x, y, width, height }));
+    localStorage.setItem("dashboard_layout", JSON.stringify(layout));
+  };
 
   const resetLayout = () => {
     setCards(initialCards);
     localStorage.removeItem("dashboard_layout");
   };
 
-  // Drag handlers
+  /* ---- Auth + drag handlers ---- */
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/login");
@@ -495,36 +514,30 @@ export default function HomePage() {
   const handleDragStart = (cardId: string) => setDraggingId(cardId);
   const handleDragEnd = () => setDraggingId(null);
 
-const handleDrag = (cardId: string, position: Position) => {
-  setCards((prev) =>
-    prev.map((c) =>
-      c.id === cardId
-        ? { ...c, x: position.x, y: position.y }
-        : c
-    )
-  );
-};
+  const handleDrag = (cardId: string, position: Position) => {
+    setCards((prev) => prev.map((c) => (c.id === cardId ? { ...c, x: position.x, y: position.y } : c)));
+  };
 
   const handleResize = (cardId: string, size: { width: number; height: number }) => {
-  setCards((prev) =>
-    prev.map((card) => (card.id === cardId ? { ...card, width: size.width, height: size.height } : card))
-  );
-};
+    setCards((prev) => prev.map((c) => (c.id === cardId ? { ...c, width: size.width, height: size.height } : c)));
+  };
 
-
-  // Subtle grid background for the canvas
+  /* ---- Canvas styling ---- */
   const canvasStyle: React.CSSProperties = {
     position: "relative",
-    minHeight: 700,
+    height: canvasHeight,
+    width: "100%",
+    maxWidth: "100%",
     borderRadius: 8,
     border: "1px solid rgba(255,255,255,0.1)",
+    overflow: "hidden", // no horizontal scroll from children
     backgroundImage:
       "repeating-linear-gradient(0deg, rgba(255,255,255,0.06), rgba(255,255,255,0.06) 1px, transparent 1px, transparent 24px), repeating-linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.06) 1px, transparent 1px, transparent 24px)",
     backgroundSize: "24px 24px, 24px 24px",
   };
 
   return (
-    <div className="min-h-screen w-full flex frosty text-white">
+    <div className="min-h-screen w-full flex frosty text-white overflow-x-hidden">
       {/* Sidebar */}
       <aside className="w-16 flex flex-col justify-between items-center py-6 bg-neutral-900/50 border-r border-white/10">
         <div className="flex flex-col gap-6">
@@ -578,8 +591,8 @@ const handleDrag = (cardId: string, position: Position) => {
           </div>
         </div>
 
-        {/* Dashboard Content */}
-        <div className="flex-1 px-8 py-8">
+        {/* Dashboard Content (vertical scroll only) */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-8 py-8">
           {/* Header */}
           <div className="flex justify-between items-start mb-8">
             <div>
@@ -607,7 +620,7 @@ const handleDrag = (cardId: string, position: Position) => {
           {/* Card Canvas + Context Menu */}
           <ContextMenu>
             <ContextMenuTrigger>
-              <div id="card-canvas" className="mb-8" style={canvasStyle}>
+              <div id="card-canvas" ref={canvasRef} className="mb-2 max-w-full" style={canvasStyle}>
                 {cards.map((card) => (
                   <DashboardCard
                     key={card.id}
