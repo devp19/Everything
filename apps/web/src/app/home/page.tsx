@@ -32,6 +32,7 @@ import {
   ArrowUp,
   GripVertical,
 } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 
 /* ================= Types ================= */
 
@@ -59,7 +60,9 @@ interface DashboardCardProps {
   onDragEnd: () => void;
   onDrag: (cardId: string, position: Position) => void;
   onResize: (cardId: string, size: { width: number; height: number }) => void;
+  borderRadius: number;
 }
+
 
 interface Session {
   user?: {
@@ -214,6 +217,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   onDragEnd,
   onDrag,
   onResize,
+  borderRadius,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<Position>({ x: card.x || 0, y: card.y || 0 });
@@ -363,6 +367,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
     height: size.height,
     minWidth: minW,
     minHeight: minH,
+    borderRadius: borderRadius,
   };
 
   return (
@@ -400,6 +405,7 @@ export default function HomePage() {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [snapToGrid, setSnapToGrid] = useState<boolean>(true);
+  const [cardRadius, setCardRadius] = useState<number>(0);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [canvasHeight, setCanvasHeight] = useState<number>(600);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -422,6 +428,17 @@ export default function HomePage() {
 
 
   const [cards, setCards] = useState<DashboardCardData[]>(initialCards);
+
+  useEffect(() => {
+  const raw = typeof window !== "undefined" ? localStorage.getItem("dashboard_card_radius") : null;
+  if (raw) setCardRadius(Number(raw) || 0);
+}, []);
+
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("dashboard_card_radius", String(cardRadius));
+  }
+}, [cardRadius]);
 
   /* ---- Supabase session + profile ---- */
   useEffect(() => {
@@ -529,10 +546,10 @@ export default function HomePage() {
     width: "100%",
     maxWidth: "100%",
     borderRadius: 8,
-    border: "1px solid rgba(255,255,255,0.1)",
+    // border: "1px solid rgba(255,255,255,0.1)",
     overflow: "hidden", // no horizontal scroll from children
-    backgroundImage:
-      "repeating-linear-gradient(0deg, rgba(255,255,255,0.06), rgba(255,255,255,0.06) 1px, transparent 1px, transparent 24px), repeating-linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.06) 1px, transparent 1px, transparent 24px)",
+    // backgroundImage:
+    //   "repeating-linear-gradient(0deg, rgba(255,255,255,0.06), rgba(255,255,255,0.06) 1px, transparent 1px, transparent 24px), repeating-linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.06) 1px, transparent 1px, transparent 24px)",
     backgroundSize: "24px 24px, 24px 24px",
   };
 
@@ -631,20 +648,52 @@ export default function HomePage() {
                     onDragEnd={handleDragEnd}
                     onDrag={handleDrag}
                     onResize={handleResize}
+                    borderRadius={cardRadius}
                   />
                 ))}
               </div>
             </ContextMenuTrigger>
             <ContextMenuContent>
-              <ContextMenuCheckboxItem checked={snapToGrid} onCheckedChange={setSnapToGrid}>
-                Snap to Grid
-              </ContextMenuCheckboxItem>
-              <ContextMenuSeparator />
-              <ContextMenuItem onClick={resetLayout}>Reset Layout</ContextMenuItem>
-              <ContextMenuItem onClick={saveLayout}>Save Layout</ContextMenuItem>
-              <ContextMenuSeparator />
-              <ContextMenuItem className="opacity-60">Add New Card (todo)</ContextMenuItem>
-            </ContextMenuContent>
+  <ContextMenuCheckboxItem checked={snapToGrid} onCheckedChange={setSnapToGrid}>
+    Snap to Grid
+  </ContextMenuCheckboxItem>
+
+  <ContextMenuSeparator />
+
+  <ContextMenuItem onClick={resetLayout}>Reset Layout</ContextMenuItem>
+  <ContextMenuItem onClick={saveLayout}>Save Layout</ContextMenuItem>
+
+  <ContextMenuSeparator />
+
+  {/* --- Corner radius slider --- */}
+  <div className="px-3 py-2 w-64">
+    <div className="flex items-center justify-between text-xs text-neutral-400 mb-2">
+      <span>Corner radius</span>
+      <span>{cardRadius}px</span>
+    </div>
+    <Slider
+      value={[cardRadius]}
+      min={0}
+      max={32}      // adjust if you want a larger cap
+      step={1}      // 1px ticks
+      onValueChange={(v) => setCardRadius(v[0] ?? 0)}
+      className="w-full"
+    />
+    <div className="mt-2 flex justify-end">
+      <button
+        className="text-xs text-neutral-400 hover:text-white"
+        onClick={() => setCardRadius(0)}
+      >
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <ContextMenuSeparator />
+
+  <ContextMenuItem className="opacity-60">Add New Card (todo)</ContextMenuItem>
+</ContextMenuContent>
+
           </ContextMenu>
 
           {/* Bottom Action Bar */}
