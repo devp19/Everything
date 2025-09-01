@@ -111,6 +111,8 @@ const handleVerifyOtp = async (e: React.FormEvent) => {
 
     setSuccess("You are now verified! Let's start personalizing your dashboard!");
     setError("");
+    window.location.href = "/";
+
   } else {
     setError(data.error || "Invalid OTP");
   }

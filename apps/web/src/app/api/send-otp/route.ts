@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
   // Send email with Resend
   await resend.emails.send({
-    from: "onboarding@resend.dev",
+    from: "noreply@devp.ca",
     to: email,
     subject: "[Action Required] - Confirm Your Email Address",
     html:`<div style="font-family: Inter, Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; border-radius: 12px; background-color: #1c1f20; color: #f9fafb;">
