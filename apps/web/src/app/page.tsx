@@ -11,6 +11,7 @@ import {
 import { ArrowUpRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { TextAnimate } from "@/components/magicui/text-animate";
+import { motion } from "framer-motion"; // ✅ import motion
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -53,7 +54,13 @@ export default function Home() {
 
   return (
     <div className="frosty flex flex-col min-h-screen items-center justify-center relative overflow-hidden">
-      <main className="flex flex-col items-center justify-center w-full text-white text-center text-3xl mb-9">
+      {/* ✅ Fade-in wrapper for whole page */}
+      <motion.main
+        className="flex flex-col items-center justify-center w-full text-white text-center text-3xl mb-9"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.2, ease: "easeOut" }}
+      >
         {/* Announcement */}
         <div
           className={`transition-opacity duration-700 ${
@@ -120,7 +127,7 @@ export default function Home() {
             <p>Not logged in</p>
           )}
         </div>
-      </main>
+      </motion.main>
     </div>
   );
 }
