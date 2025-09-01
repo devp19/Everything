@@ -198,7 +198,7 @@ export default function HomePage() {
                 compared to last month.
               </div>
               <div className="absolute bottom-4 left-6">
-                <button className="text-xs text-neutral-500 hover:text-cyan-400">
+                <button className="text-xs text-neutral-500 hover:text-white">
                   Want to see a breakdown?
                 </button>
               </div>
@@ -234,7 +234,7 @@ export default function HomePage() {
                 Your current runway is
               </div>
               <div className={`${GeistMono.className} text-2xl font-regular mb-4 tracking-tighter`}>9 months</div>
-              <button className="text-xs text-neutral-500 hover:text-cyan-400">
+              <button className="text-xs text-neutral-500 hover:text-white">
                 See burnrate
               </button>
             </div>
@@ -252,7 +252,7 @@ export default function HomePage() {
                 , automatically categorized as{" "}
                 <span className="font-regular">agreements</span>
               </div>
-              <button className="text-xs text-neutral-500 hover:text-cyan-400">
+              <button className="text-xs text-neutral-500 hover:text-white">
                 Show documents
               </button>
             </div>
@@ -267,7 +267,7 @@ export default function HomePage() {
                 Spending this month
               </div>
               <div className={`${GeistMono.className} text-2xl font-regular mb-4 tracking-tighter`}>$5,278.50</div>
-              <button className="text-xs text-neutral-500 hover:text-cyan-400">
+              <button className="text-xs text-neutral-500 hover:text-white">
                 See biggest cost
               </button>
             </div>
@@ -287,7 +287,7 @@ export default function HomePage() {
                 <span className={`${GeistMono.className} font-regular mb-4 tracking-tighter`}>$12,500</span> outstanding in
                 outstanding invoices
               </div>
-              <button className="text-xs text-neutral-500 hover:text-cyan-400">
+              <button className="text-xs text-neutral-500 hover:text-white">
                 See unpaid invoices
               </button>
             </div>
@@ -303,7 +303,7 @@ export default function HomePage() {
                 <span className={`${GeistMono.className} mb-4 tracking-tighter`}>$24,356</span> in two different
                 currencies
               </div>
-              <button className="text-xs text-neutral-500 hover:text-cyan-400 mt-4">
+              <button className="text-xs text-neutral-500 hover:text-white mt-4">
                 See account balances
               </button>
             </div>
@@ -336,7 +336,7 @@ export default function HomePage() {
                   />
                 </svg>
               </div>
-              <button className="text-xs text-neutral-500 hover:text-cyan-400">
+              <button className="text-xs text-neutral-500 hover:text-white">
                 See which subscriptions went up?
               </button>
             </div>
