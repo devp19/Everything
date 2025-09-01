@@ -37,7 +37,7 @@ export function LoginForm({
     } else {
       setError("");
       console.log("✅ Logged in!");
-      window.location.href = "/";
+      window.location.href = "/home";
     }
   };
 
