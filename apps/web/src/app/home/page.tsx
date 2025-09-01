@@ -44,6 +44,8 @@ interface DashboardCardData {
   content: JSX.Element;
   x: number;
   y: number;
+  width: number;
+  height: number;
 }
 
 interface DashboardCardProps {
@@ -53,6 +55,7 @@ interface DashboardCardProps {
   onDragStart: (cardId: string) => void;
   onDragEnd: () => void;
   onDrag: (cardId: string, position: Position) => void;
+  onResize: (cardId: string, size: { width: number; height: number }) => void;
 }
 
 interface Session {
@@ -215,6 +218,8 @@ const SoftwareCostsCard = () => (
 // ============ Draggable Card ============
 const CARD_WIDTH = 320;
 const CARD_MINH = 160;
+const MIN_WIDTH = 240;
+const MIN_HEIGHT = 140;
 const SNAP = 24;
 
 const DashboardCard: React.FC<DashboardCardProps> = ({
@@ -224,16 +229,28 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   onDragStart,
   onDragEnd,
   onDrag,
+  onResize,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<Position>({ x: card.x || 0, y: card.y || 0 });
   const [dragOffset, setDragOffset] = useState<Position>({ x: 0, y: 0 });
 
-  // Keep internal position in sync if external changes (e.g., reset layout)
+  // size state for resizing
+  const [size, setSize] = useState<{ width: number; height: number }>({
+    width: card.width || CARD_WIDTH,
+    height: card.height || CARD_MINH,
+  });
+
+  // keep local state in sync if parent resets layout
   useEffect(() => {
     setPosition({ x: card.x || 0, y: card.y || 0 });
   }, [card.x, card.y]);
 
+  useEffect(() => {
+    setSize({ width: card.width || CARD_WIDTH, height: card.height || CARD_MINH });
+  }, [card.width, card.height]);
+
+  // ---------- Dragging ----------
   const beginDrag = (clientX: number, clientY: number) => {
     const rect = cardRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -258,8 +275,6 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
     if (!container) return;
 
     const containerRect = container.getBoundingClientRect();
-    const cardW = cardRef.current.offsetWidth || CARD_WIDTH;
-    const cardH = cardRef.current.offsetHeight || CARD_MINH;
 
     let newX = clientX - containerRect.left - dragOffset.x;
     let newY = clientY - containerRect.top - dragOffset.y;
@@ -269,8 +284,9 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
       newY = Math.round(newY / SNAP) * SNAP;
     }
 
-    newX = Math.max(0, Math.min(newX, containerRect.width - cardW));
-    newY = Math.max(0, Math.min(newY, containerRect.height - cardH));
+    // bound using current size
+    newX = Math.max(0, Math.min(newX, containerRect.width - size.width));
+    newY = Math.max(0, Math.min(newY, containerRect.height - size.height));
 
     setPosition({ x: newX, y: newY });
     onDrag(card.id, { x: newX, y: newY });
@@ -280,7 +296,6 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   const handleTouchMove = (e: TouchEvent) => {
     const t = e.touches[0];
     if (!t) return;
-    // prevent page scroll while dragging
     e.preventDefault();
     updatePos(t.clientX, t.clientY);
   };
@@ -301,8 +316,59 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
       document.removeEventListener("touchend", handlePointerUp);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDragging, dragOffset, snapToGrid]);
+  }, [isDragging, dragOffset, snapToGrid, size.width, size.height]);
 
+  // ---------- Resizing ----------
+  const resizingRef = useRef(false);
+  const startWH = useRef<{ w: number; h: number; x: number; y: number }>({ w: 0, h: 0, x: 0, y: 0 });
+
+  const startResizeMouse = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    resizingRef.current = true;
+    startWH.current = { w: size.width, h: size.height, x: e.clientX, y: e.clientY };
+    bindResizeListeners();
+  };
+
+  const startResizeTouch = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    const t = e.touches[0];
+    resizingRef.current = true;
+    startWH.current = { w: size.width, h: size.height, x: t.clientX, y: t.clientY };
+    bindResizeListeners();
+  };
+
+  const bindResizeListeners = () => {
+    document.addEventListener("mousemove", doResize as any);
+    document.addEventListener("mouseup", stopResize);
+    document.addEventListener("touchmove", doResize as any, { passive: false });
+    document.addEventListener("touchend", stopResize);
+  };
+
+  const doResize = (ev: MouseEvent | TouchEvent) => {
+    if (!resizingRef.current) return;
+    const clientX = "touches" in ev ? ev.touches[0].clientX : ev.clientX;
+    const clientY = "touches" in ev ? ev.touches[0].clientY : ev.clientY;
+
+    let newW = startWH.current.w + (clientX - startWH.current.x);
+    let newH = startWH.current.h + (clientY - startWH.current.y);
+
+    // clamp to minimums
+    newW = Math.max(MIN_WIDTH, newW);
+    newH = Math.max(MIN_HEIGHT, newH);
+
+    setSize({ width: newW, height: newH });
+    onResize(card.id, { width: newW, height: newH });
+  };
+
+  const stopResize = () => {
+    resizingRef.current = false;
+    document.removeEventListener("mousemove", doResize as any);
+    document.removeEventListener("mouseup", stopResize);
+    document.removeEventListener("touchmove", doResize as any);
+    document.removeEventListener("touchend", stopResize);
+  };
+
+  // ---------- Styles ----------
   const cardStyle: React.CSSProperties = {
     position: "absolute",
     left: position.x,
@@ -310,8 +376,10 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
     zIndex: isDragging ? 50 : 1,
     transform: isDragging ? "rotate(2deg)" : "none",
     transition: isDragging ? "none" : "transform 120ms ease",
-    width: CARD_WIDTH,
-    minHeight: CARD_MINH,
+    width: size.width,
+    height: size.height,
+    minWidth: MIN_WIDTH,
+    minHeight: MIN_HEIGHT,
   };
 
   return (
@@ -324,13 +392,25 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
       onMouseDown={onPointerDownMouse}
       onTouchStart={onPointerDownTouch}
     >
+      {/* drag affordance */}
       <div className="absolute top-2 right-2 opacity-30 hover:opacity-60">
         <GripVertical size={16} />
       </div>
+
+      {/* content */}
       {card.content}
+
+      {/* resize handle (bottom-right) */}
+      <div
+        className="absolute bottom-1 right-1 w-3 h-3 bg-white/40 rounded-[2px] cursor-se-resize no-drag"
+        onMouseDown={startResizeMouse}
+        onTouchStart={startResizeTouch}
+        title="Drag to resize"
+      />
     </div>
   );
 };
+
 
 // ============ Main Page ============
 export default function HomePage() {
@@ -342,15 +422,16 @@ export default function HomePage() {
 
   // Seed positions (4 columns, 24px gap)
   const initialCards: DashboardCardData[] = [
-    { id: "revenue", content: <RevenueInsightsCard />, x: 0, y: 0 },
-    { id: "profit", content: <ProfitAnalysisCard />, x: 344, y: 0 },
-    { id: "runway", content: <CashRunwayCard />, x: 688, y: 0 },
-    { id: "files", content: <FileManagementCard />, x: 1032, y: 0 },
-    { id: "spending", content: <MonthlySpendingCard />, x: 0, y: 200 },
-    { id: "invoices", content: <OutstandingInvoicesCard />, x: 344, y: 200 },
-    { id: "balance", content: <AccountBalanceCard />, x: 688, y: 200 },
-    { id: "software", content: <SoftwareCostsCard />, x: 1032, y: 200 },
-  ];
+  { id: "revenue",  content: <RevenueInsightsCard />,   x: 0,    y: 0,   width: CARD_WIDTH, height: CARD_MINH },
+  { id: "profit",   content: <ProfitAnalysisCard />,    x: 344,  y: 0,   width: CARD_WIDTH, height: CARD_MINH },
+  { id: "runway",   content: <CashRunwayCard />,        x: 688,  y: 0,   width: CARD_WIDTH, height: CARD_MINH },
+  { id: "files",    content: <FileManagementCard />,    x: 1032, y: 0,   width: CARD_WIDTH, height: CARD_MINH },
+  { id: "spending", content: <MonthlySpendingCard />,   x: 0,    y: 200, width: CARD_WIDTH, height: CARD_MINH },
+  { id: "invoices", content: <OutstandingInvoicesCard />,x: 344, y: 200, width: CARD_WIDTH, height: CARD_MINH },
+  { id: "balance",  content: <AccountBalanceCard />,    x: 688,  y: 200, width: CARD_WIDTH, height: CARD_MINH },
+  { id: "software", content: <SoftwareCostsCard />,     x: 1032, y: 200, width: CARD_WIDTH, height: CARD_MINH },
+];
+
 
   const [cards, setCards] = useState<DashboardCardData[]>(initialCards);
 
@@ -395,9 +476,10 @@ export default function HomePage() {
   }, []);
 
   const saveLayout = () => {
-    const layout = cards.map(({ id, x, y }) => ({ id, x, y }));
-    localStorage.setItem("dashboard_layout", JSON.stringify(layout));
-  };
+  const layout = cards.map(({ id, x, y, width, height }) => ({ id, x, y, width, height }));
+  localStorage.setItem("dashboard_layout", JSON.stringify(layout));
+};
+
 
   const resetLayout = () => {
     setCards(initialCards);
@@ -413,9 +495,22 @@ export default function HomePage() {
   const handleDragStart = (cardId: string) => setDraggingId(cardId);
   const handleDragEnd = () => setDraggingId(null);
 
-  const handleDrag = (cardId: string, position: Position) => {
-    setCards((prev) => prev.map((card) => (card.id === cardId ? { ...card, x: position.x, y: position.y } : card)));
-  };
+const handleDrag = (cardId: string, position: Position) => {
+  setCards((prev) =>
+    prev.map((c) =>
+      c.id === cardId
+        ? { ...c, x: position.x, y: position.y }
+        : c
+    )
+  );
+};
+
+  const handleResize = (cardId: string, size: { width: number; height: number }) => {
+  setCards((prev) =>
+    prev.map((card) => (card.id === cardId ? { ...card, width: size.width, height: size.height } : card))
+  );
+};
+
 
   // Subtle grid background for the canvas
   const canvasStyle: React.CSSProperties = {
@@ -522,6 +617,7 @@ export default function HomePage() {
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
                     onDrag={handleDrag}
+                    onResize={handleResize}
                   />
                 ))}
               </div>
