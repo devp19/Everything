@@ -23,6 +23,10 @@ import {
   ArrowUp,
 } from "lucide-react";
 
+// page.tsx or layout.tsx
+import { GeistMono } from 'geist/font/mono'
+
+
 // Supabase config
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -151,7 +155,7 @@ export default function HomePage() {
           {/* Header */}
           <div className="flex justify-between items-start mb-8">
             <div>
-              <h1 className="text-4xl font-light">
+              <h1 className={`${GeistMono.className} text-4xl font-light tracking-tighter`}>
                 Morning{" "}
                 <span className="font-regular text-muted-foreground">
                   {session?.user?.user_metadata?.full_name
@@ -165,16 +169,11 @@ export default function HomePage() {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                className="border-white/20 text-white/70 bg-transparent hover:bg-white/10"
-              >
-                Customize
-              </Button>
+             
               <button className="p-2 rounded hover:bg-white/10">
-                <div className="w-5 h-5 flex flex-col gap-1">
-                  <div className="w-full h-0.5 bg-white/60 rounded"></div>
-                  <div className="w-full h-0.5 bg-white/60 rounded"></div>
+                <div className="w-5 h-2 flex flex-col gap-1">
+                  <div className="w-full h-0.5 bg-white/60"></div>
+                  <div className="w-full h-0.5 bg-white/60"></div>
                 </div>
               </button>
             </div>
@@ -189,13 +188,13 @@ export default function HomePage() {
                 <span className="text-xs text-neutral-400 font-medium">
                   Revenue Insights
                 </span>
-                <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded-full ml-auto">
+                <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full ml-auto">
                   New
                 </span>
               </div>
               <div className="text-sm mb-4">
                 You're on track this month!{" "}
-                <span className="font-semibold">Revenue is up 12%</span>{" "}
+                <span className="font-regular">Revenue is up 12%</span>{" "}
                 compared to last month.
               </div>
               <div className="absolute bottom-4 left-6">
@@ -209,32 +208,32 @@ export default function HomePage() {
             <div className="bg-neutral-900/30 border border-white/10  p-6">
               <div className="flex items-center gap-2 mb-3">
                 <BarChart2 size={14} className="text-neutral-400" />
-                <span className="text-sm font-semibold">Profit Analysis</span>
+                <span className="text-sm font-regular">Profit Analysis</span>
               </div>
-              <div className="text-sm text-neutral-300 mb-3">
+              <div className={"text-sm text-neutral-300 mb-3"}>
                 Your average profit during 6 months is
               </div>
-              <div className="text-2xl font-bold mb-4">$1,450.50</div>
-              <div className="flex items-end gap-1 h-12">
+              <div className={`${GeistMono.className} text-2xl font-regular mb-4 tracking-tighter`}>$1,450.50</div>
+              {/* <div className="flex items-end gap-1 h-12">
                 <div className="w-2 h-6 bg-white/40 rounded-sm"></div>
                 <div className="w-2 h-8 bg-white/60 rounded-sm"></div>
                 <div className="w-2 h-10 bg-white/80 rounded-sm"></div>
                 <div className="w-2 h-7 bg-white/50 rounded-sm"></div>
                 <div className="w-2 h-9 bg-white/70 rounded-sm"></div>
                 <div className="w-2 h-8 bg-white rounded-sm"></div>
-              </div>
+              </div> */}
             </div>
 
             {/* Cash Runway */}
             <div className="bg-neutral-900/30 border border-white/10  p-6">
               <div className="flex items-center gap-2 mb-3">
                 <Clock size={14} className="text-neutral-400" />
-                <span className="text-sm font-semibold">Cash Runway</span>
+                <span className="text-sm font-regular">Cash Runway</span>
               </div>
               <div className="text-sm text-neutral-300 mb-2">
                 Your current runway is
               </div>
-              <div className="text-3xl font-bold mb-4">9 months</div>
+              <div className={`${GeistMono.className} text-2xl font-regular mb-4 tracking-tighter`}>9 months</div>
               <button className="text-xs text-neutral-500 hover:text-cyan-400">
                 See burnrate
               </button>
@@ -244,14 +243,14 @@ export default function HomePage() {
             <div className="bg-neutral-900/30 border border-white/10  p-6">
               <div className="flex items-center gap-2 mb-3">
                 <FileText size={14} className="text-neutral-400" />
-                <span className="text-sm font-semibold">File Management</span>
+                <span className="text-sm font-regular">File Management</span>
               </div>
               <div className="text-sm mb-4">
-                <span className="text-cyan-400 font-semibold">
+                <span className="text-white font-regular">
                   2 new uploaded files
                 </span>
                 , automatically categorized as{" "}
-                <span className="font-semibold">agreements</span>
+                <span className="font-regular">agreements</span>
               </div>
               <button className="text-xs text-neutral-500 hover:text-cyan-400">
                 Show documents
@@ -262,12 +261,12 @@ export default function HomePage() {
             <div className="bg-neutral-900/30 border border-white/10  p-6">
               <div className="flex items-center gap-2 mb-3">
                 <DollarSign size={14} className="text-neutral-400" />
-                <span className="text-sm font-semibold">Monthly Spending</span>
+                <span className="text-sm font-regular">Monthly Spending</span>
               </div>
               <div className="text-sm text-neutral-300 mb-2">
                 Spending this month
               </div>
-              <div className="text-3xl font-bold mb-4">$5,278.50</div>
+              <div className={`${GeistMono.className} text-2xl font-regular mb-4 tracking-tighter`}>$5,278.50</div>
               <button className="text-xs text-neutral-500 hover:text-cyan-400">
                 See biggest cost
               </button>
@@ -277,14 +276,15 @@ export default function HomePage() {
             <div className="bg-neutral-900/30 border border-white/10  p-6">
               <div className="flex items-center gap-2 mb-3">
                 <Receipt size={14} className="text-neutral-400" />
-                <span className="text-sm font-semibold">
+                <span className="text-sm font-regular">
                   Outstanding Invoices
                 </span>
+                
               </div>
               <div className="text-sm mb-4">
                 You currently have{" "}
-                <span className="font-semibold">4 unpaid</span> and{" "}
-                <span className="font-semibold">$12,500</span> outstanding in
+                <span className="font-regular">4 unpaid</span> and{" "}
+                <span className={`${GeistMono.className} font-regular mb-4 tracking-tighter`}>$12,500</span> outstanding in
                 outstanding invoices
               </div>
               <button className="text-xs text-neutral-500 hover:text-cyan-400">
@@ -296,11 +296,11 @@ export default function HomePage() {
             <div className="bg-neutral-900/30 border border-white/10  p-6">
               <div className="flex items-center gap-2 mb-3">
                 <CreditCard size={14} className="text-neutral-400" />
-                <span className="text-sm font-semibold">Account Balance</span>
+                <span className="text-sm font-regular">Account Balance</span>
               </div>
               <div className="text-sm text-neutral-300 mb-2">
                 Total account balance is{" "}
-                <span className="font-semibold">$24,356</span> in two different
+                <span className={`${GeistMono.className} mb-4 tracking-tighter`}>$24,356</span> in two different
                 currencies
               </div>
               <button className="text-xs text-neutral-500 hover:text-cyan-400 mt-4">
@@ -312,11 +312,11 @@ export default function HomePage() {
             <div className="bg-neutral-900/30 border border-white/10  p-6">
               <div className="flex items-center gap-2 mb-3">
                 <Settings size={14} className="text-neutral-400" />
-                <span className="text-sm font-semibold">Software Costs</span>
+                <span className="text-sm font-regular">Software Costs</span>
               </div>
               <div className="text-sm mb-4">
                 Your{" "}
-                <span className="text-orange-400 font-semibold">
+                <span className={`${GeistMono.className} font-regular mb-4 tracking-tighter`}>
                   software costs increased by 10%
                 </span>{" "}
                 this month
