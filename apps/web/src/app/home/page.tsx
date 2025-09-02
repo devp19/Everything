@@ -33,6 +33,9 @@ import {
   GripVertical,
 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
+import { Kbd, KbdKey } from "@/components/ui/kibo-ui/kbd";
+import { CommandPaletteModal } from "@/components/CommandPaletteModal";
+console.log('CommandPaletteModal:', CommandPaletteModal);
 
 /* ================= Types ================= */
 
@@ -405,11 +408,24 @@ export default function HomePage() {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [snapToGrid, setSnapToGrid] = useState<boolean>(true);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [cardRadius, setCardRadius] = useState<number>(0);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [canvasHeight, setCanvasHeight] = useState<number>(600);
   const canvasRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+  const handler = (e: KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      setShowCommandPalette(true);   // open your palette
+    }
+  };
+  window.addEventListener('keydown', handler);
+  return () => window.removeEventListener('keydown', handler);
+}, []);
+
 
   // Seed positions (4 columns, 24px gap), with per-card min sizes where desired
  const initialCards: DashboardCardData[] = [
@@ -555,6 +571,7 @@ useEffect(() => {
 
   return (
     <div className="min-h-screen w-full flex frosty text-white overflow-x-hidden">
+      
       {/* Sidebar */}
       <aside className="w-16 flex flex-col justify-between items-center py-6 bg-neutral-900/50 border-r border-white/10">
         <div className="flex flex-col gap-6">
@@ -621,6 +638,16 @@ useEffect(() => {
                     : ""}
                   ,
                 </span>
+                <Kbd style={{ marginLeft: '10px'}}>
+    <KbdKey aria-label="Meta">⌘</KbdKey>
+    <KbdKey>K</KbdKey>
+  </Kbd>
+
+{showCommandPalette && (
+  <CommandPaletteModal onClose={() => setShowCommandPalette(false)} />
+)}
+
+
               </h1>
               <p className="text-neutral-400 mt-2 text-sm">here&apos;s a quick look at how things are going.</p>
             </div>
