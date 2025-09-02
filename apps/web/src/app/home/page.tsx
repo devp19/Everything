@@ -36,6 +36,7 @@ import { Slider } from "@/components/ui/slider";
 import { Kbd, KbdKey } from "@/components/ui/kibo-ui/kbd";
 import { CommandPaletteModal } from "@/components/CommandPaletteModal";
 console.log('CommandPaletteModal:', CommandPaletteModal);
+import { LuPlug } from "react-icons/lu";
 
 /* ================= Types ================= */
 
@@ -578,36 +579,32 @@ useEffect(() => {
           <div className="p-2">
             <Sun size={24} className="text-white" />
           </div>
-          <button className="p-2 hover:cursor-pointer">
-            <Grid size={20} />
-          </button>
-          <button className="p-2 hover:cursor-pointer">
+          <button onClick={() => router.push('/home')} className="p-2 hover:cursor-pointer hover:bg-white/10 rounded bg-white/10">
             <Home size={20} />
           </button>
-          <button className="p-2 hover:cursor-pointer">
-            <FileText size={20} />
+          <button onClick={() => router.push('/apps')} className="p-2 hover:cursor-pointer hover:bg-white/10 rounded">
+            <LuPlug size={20} />
           </button>
-          <button className="p-2 hover:cursor-pointer">
+          <button className="p-2 hover:cursor-pointer hover:bg-white/10 rounded">
             <Receipt size={20} />
           </button>
-          <button className="p-2 hover:cursor-pointer">
+          <button className="p-2 hover:cursor-pointer hover:bg-white/10 rounded">
             <Clock size={20} />
           </button>
-          <button className="p-2 hover:cursor-pointer">
+          <button className="p-2 hover:cursor-pointer hover:bg-white/10 rounded">
             <FileText size={20} />
           </button>
-          <button className="p-2 hover:cursor-pointer">
+          <button className="p-2 hover:cursor-pointer hover:bg-white/10 rounded">
             <User size={20} />
           </button>
-          <button className="p-2 hover:cursor-pointer">
+          <button className="p-2 hover:cursor-pointer hover:bg-white/10 rounded">
             <Settings size={20} />
           </button>
-          <button className="p-2 hover:cursor-pointer" onClick={handleLogout}>
+          <button className="p-2 hover:cursor-pointer hover:bg-white/10 rounded" onClick={handleLogout}>
             <LogOut size={20} />
           </button>
         </div>
       </aside>
-
       {/* Main Content */}
       <main className="flex-1 flex flex-col">
         {/* Top Search Bar */}
